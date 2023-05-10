@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Plain JS Unidirectional Association App: Manage Books</title>
+  <title>Plain JS Unidirectional Association App: Manage Movies</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
   <meta name="theme-color" content="#ffffff"/>
@@ -29,6 +29,7 @@
     <nav>
       <ul>
         <li><a href="movies.html">Movies</a></li>
+        <li><a href="persons.html">Persons</a></li>
       </ul>
     </nav>
   </div>
@@ -36,7 +37,7 @@
 <main>
   <div class="wrapper clearfix">
     <!-- ======================================================= -->
-    <section id="Book-M" class="UI-Page">
+    <section id="Movie-M" class="UI-Page">
       <!-- ======================================================= -->
       <h1>Manage movie data</h1>
       <ul class="menu">
@@ -58,7 +59,7 @@
       <div class="button"><a href="index.html">Back to Main menu</a></div>
     </section>
     <!-- ======================================================= -->
-    <section id="Book-R" class="UI-Page">
+    <section id="Movie-R" class="UI-Page">
       <!-- ======================================================= -->
       <h1>Retrieve and list all movie records</h1>
       <table>
@@ -128,8 +129,8 @@
           <label>Director: <select name="selectDirector"></select></label>
         </div>
         <div class="widget">
-          <label for="updBookSelectActors">Actors:</label>
-          <div id="updBookSelectAuthors" class="MultiSelectionWidget"></div>
+          <label for="updMovieSelectActors">Actors:</label>
+          <div id="updMovieSelectAuthors" class="MultiSelectionWidget"></div>
         </div>
         <div class="button-group">
           <button type="submit" name="commit" disabled="disabled">Save</button>

@@ -25,6 +25,7 @@ class Person {
     return this._personId;
   }
   static checkPersonId( pid) {
+    console.log(pid);
     if (!Number.isInteger(parseInt( pid))) {
         return new RangeConstraintViolation("The person id must be a positive integer!");
       } else if (pid < 0) {
@@ -38,7 +39,7 @@ class Person {
     if ((validationResult instanceof NoConstraintViolation)) {
       if (!pid) {
         return new MandatoryValueConstraintViolation(
-            "A person personId is required!");
+            "A  personId is required!");
       } else if (Person.instances[pid]) {
         return new UniquenessConstraintViolation(
             "There is already a person record with this personId!");

@@ -19,11 +19,11 @@ import Person from "./Person.mjs";
  */
 class Movie {
 
-  constructor ({movieId, title, director, actors, actorsIdRef}) {
+  constructor ({movieId, title, director, director_id, actors, actorsIdRef}) {
     // assign default values to mandatory properties
     this.movieId = movieId;   
     this.title = title;  
-    this.director = director;
+    this.director = director || director_id;
     if (actors || actorsIdRef) {
         this.actors = actors || actorsIdRef;
     }
@@ -43,7 +43,7 @@ class Movie {
     }
   }
 
-  static checkMovieIDasID ( id) {
+  static checkMovieIdAsId ( id) {
     var validationResult = Movie.checkMovieID( id);
     if ((validationResult instanceof NoConstraintViolation)) {
       if (!id) {
@@ -60,7 +60,7 @@ class Movie {
   }
 
   set movieId ( id) {
-    const validationResult = Movie.checkMovieIDasID( id);
+    const validationResult = Movie.checkMovieIdAsId( id);
     if (validationResult instanceof NoConstraintViolation) {
       this._movieId = id;
     } else {
@@ -99,7 +99,7 @@ class Movie {
 
 
   static checkDirector ( director_id) {
-    validationResult = null;
+    var validationResult = null;
     if(!director_id){
         validationResult = new MandatoryValueConstraintViolation("A director must be provided");
     } else {
@@ -112,7 +112,7 @@ class Movie {
     if (!d) {  // unset director
         delete this._director;
       } else {
-        // p can be an ID reference or an object reference
+        // d can be an ID reference or an object reference
         const director_id = (typeof d !== "object") ? d : d.personId;
         const validationResult = Movie.checkDirector( director_id);
         if (validationResult instanceof NoConstraintViolation) {
@@ -185,7 +185,8 @@ class Movie {
    **********************************************************/
    toString() {
     var movStr = `Movie{ ID: ${this.movieId}, title: ${this.title}, releaseDate: ${this.releaseDate}, director: ${this.director.toString()}`;
-    return `${movStr}, actors: ${Object.keys( this.actors).join(",")} }`;
+    if (this.actors) movStr += `, actors: ${Object.keys( this.actors).join(",")} }`;
+    return `${movStr}`;
   }
   // Convert object to record with ID references
   toJSON() {  // is invoked by JSON.stringify in Movie.saveAll
@@ -294,7 +295,7 @@ Movie.add = function (slots) {
   };
   /**
    *  Load all movie table rows and convert them to objects 
-   *  Precondition: publishers and people must be loaded first
+   *  Precondition: persons must be loaded first
    */
   Movie.retrieveAll = function () {
     var movies = {};
