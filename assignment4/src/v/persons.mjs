@@ -68,8 +68,10 @@
    createFormEl.personId.setCustomValidity(
      Person.checkPersonIdAsId( createFormEl.personId.value).message);
  });
- /* SIMPLIFIED CODE: no responsive validation of name */
- 
+ createFormEl.name.addEventListener("input", function () {
+  createFormEl.name.setCustomValidity(
+    Person.checkName( createFormEl.name.value).message);
+});
  // handle Save button click events
  createFormEl["commit"].addEventListener("click", function () {
    const slots = {
@@ -78,7 +80,7 @@
    };
    // check all input fields and show error messages
    createFormEl.personId.setCustomValidity( Person.checkPersonIdAsId( slots.personId).message);
-   /* SIMPLIFIED CODE: no before-submit validation of personId */
+   createFormEl.name.setCustomValidity( Person.checkName( slots.name).message);
    // save the input data only if all form fields are valid
    if (createFormEl.checkValidity()) Person.add( slots);
  });
@@ -107,7 +109,8 @@
      name: updateFormEl.name.value
    }
    // check all property constraints
-   /* SIMPLIFIED CODE: no before-save validation of personId */
+   updateFormEl.personId.setCustomValidity( Person.checkPersonIdAsId( slots.personId).message);
+   updateFormEl.name.setCustomValidity( Person.checkName( slots.name).message);
    // save the input data only if all of the form fields are valid
    if (updSelPersonEl.checkValidity()) {
      Person.update( slots);

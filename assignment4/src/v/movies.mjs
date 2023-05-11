@@ -44,14 +44,15 @@
    tableBodyEl.innerHTML = "";  // drop old content
    for (const key of Object.keys( Movie.instances)) {
      const movie = Movie.instances[key];
+     console.log(`movie: ${movie}`);
      // create list of actors for this movie
-     const actListEl = createListFromMap( movie.actors, "personId");
+     //const actListEl = createListFromMap( movie.actors, "personId");
      const row = tableBodyEl.insertRow();
      row.insertCell().textContent = movie.movieId;
      row.insertCell().textContent = movie.title;
      row.insertCell().textContent = movie.releaseDate;
      row.insertCell().textContent = movie.director.personId;
-     row.insertCell().appendChild( actListEl);
+     //row.insertCell().appendChild( actListEl);
    }
  });
  
@@ -76,8 +77,18 @@
    createFormEl.movieId.setCustomValidity(
        Movie.checkMovieIdAsId( createFormEl["movieId"].value).message);
  });
- /* SIMPLIFIED/MISSING CODE: add event listeners for responsive
-    validation on user input with Movie.checkTitle and checkYear */
+ /* event listeners for responsivevalidation on user input with Movie.checkTitle and checkReleaseDate */
+
+  createFormEl.title.addEventListener("input", function () {
+    createFormEl.title.setCustomValidity(
+        Movie.checkTitle( createFormEl["title"].value).message);
+  });
+
+  createFormEl.releaseDate.addEventListener("input", function () {
+    createFormEl.releaseDate.setCustomValidity(
+        Movie.checkReleaseDate( createFormEl["releaseDate"].value).message);
+  });
+  
  
  // handle Save button click events
  createFormEl["commit"].addEventListener("click", function () {
@@ -85,20 +96,31 @@
      movieId: createFormEl["movieId"].value,
      title: createFormEl["title"].value,
      releaseDate: createFormEl["releaseDate"].value,
-     actorIdRefs: [],
+     actorsIdRefs: [],
      director_id: createFormEl["selectDirector"].value
    };
    // check all input fields and show error messages
    createFormEl.movieId.setCustomValidity(
        Movie.checkMovieIdAsId( slots.movieId).message);
    /* SIMPLIFIED CODE: no before-submit validation of name */
-   // get the list of selected actors
+   createFormEl.title.setCustomValidity(
+    Movie.checkTitle( slots.title).message);
+  
+   createFormEl.releaseDate.setCustomValidity(
+    Movie.checkReleaseDate( slots.releaseDate).message);
+
+   createFormEl.selectDirector.setCustomValidity(
+    Movie.checkDirector( slots.director_id).message);
+
+   createFormEl.movieId.setCustomValidity(
+    Movie.checkMovieIdAsId( slots.movieId).message);
+   // get the list of selected actors -> no actors have to be chosen
    const selActOptions = createFormEl.selectActors.selectedOptions;
    // save the input data only if all form fields are valid
    if (createFormEl.checkValidity()) {
      // construct a list of actor ID references
      for (const opt of selActOptions) {
-       slots.actorIdRefs.push( opt.value);
+       slots.actorsIdRefs.push( opt.value);
      }
      Movie.add( slots);
    }
@@ -136,10 +158,10 @@
      // set up the associated director selection list
      fillSelectWithOptions( selectDirectorEl, Person.instances, "personId");
      // set up the associated actors selection widget
-     createMultiSelectionWidget( selectActorsWidget, movie.actors,
-         Actor.instances, "personId", "name", 1);  // minCard=1
+     //createMultiSelectionWidget( selectActorsWidget, movie.actors,
+     //    Actor.instances, "personId", "name", 1);  // minCard=1
      // assign associated director as the selected option to select element
-     updateFormEl["selectDirector"].value = movie.director.name;
+     updateFormEl["selectDirector"].value = movie.director.personId;
      saveButton.disabled = false;
    } else {
      updateFormEl.reset();
@@ -162,25 +184,31 @@
    };
    // add event listeners for responsive validation
    /* MISSING CODE */
+   updateFormEl.movieId.setCustomValidity( Movie.checkMovieIdAsId( slots.movieId).message);
+   updateFormEl.title.setCustomValidity( Movie.checkTitle( slots.title).message);
+   updateFormEl.releaseDate.setCustomValidity( Movie.checkReleaseDate( slots.releaseDate).message);
+   updateFormEl.selectDirector.setCustomValidity( Movie.checkDirector( slots.director_id).message);
    // commit the update only if all form field values are valid
    if (updateFormEl.checkValidity()) {
-     // construct actorIdRefs-ToAdd/ToRemove lists
-     const actorIdRefsToAdd=[], actorIdRefsToRemove=[];
+     // construct actorsIdRefs-ToAdd/ToRemove lists
+     /*
+     const actorsIdRefsToAdd=[], actorsIdRefsToRemove=[];
      for (const actorItemEl of selectedActorsListEl.children) {
        if (actorItemEl.classList.contains("removed")) {
-         actorIdRefsToRemove.push( actorItemEl.getAttribute("data-value"));
+         actorsIdRefsToRemove.push( actorItemEl.getAttribute("data-value"));
        }
        if (actorItemEl.classList.contains("added")) {
-         actorIdRefsToAdd.push( actorItemEl.getAttribute("data-value"));
+         actorsIdRefsToAdd.push( actorItemEl.getAttribute("data-value"));
        }
      }
      // if the add/remove list is non-empty, create a corresponding slot
-     if (actorIdRefsToRemove.length > 0) {
-       slots.actorIdRefsToRemove = actorIdRefsToRemove;
+     if (actorsIdRefsToRemove.length > 0) {
+       slots.actorsIdRefsToRemove = actorsIdRefsToRemove;
      }
-     if (actorIdRefsToAdd.length > 0) {
-       slots.actorIdRefsToAdd = actorIdRefsToAdd;
+     if (actorsIdRefsToAdd.length > 0) {
+       slots.actorsIdRefsToAdd = actorsIdRefsToAdd;
      }
+     */
      Movie.update( slots);
      // update the movie selection list's option element
      updSelMovieEl.options[updSelMovieEl.selectedIndex].text = slots.title;

@@ -50,21 +50,21 @@ function generateTestData() {
       movieId: 1,
       title: "Pulp Fiction",
       releaseDate: "1994-05-12",
-      actorIdRefs: [3,5,6],
+      actorsIdRef: [3,5,6],
       director_id: 3
     });
     Movie.instances["2"] = new Movie({
       movieId: 2,
       title: "Star Wars",
       releaseDate: "1977-05-25",
-      actorIdRefs: [7,8],
+      actorsIdRef: [7,8],
       director_id: 2
     });
     Movie.instances["3"] = new Movie({
       movieId: 3,
       title: "Dangerous Liaisons",
       releaseDate: "1994-05-12",
-      actorIdRefs: [9,5],
+      actorsIdRef: [9,5],
       director_id: 1
     });
     Movie.saveAll();

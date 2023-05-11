@@ -179,11 +179,11 @@ Person.retrieveAll = function () {
     console.log( "Error when reading from Local Storage\n" + e);
     return;
   }
-  for (const persName of Object.keys( persons)) {
+  for (const personId of Object.keys( persons)) {
     try {
-      Person.instances[persName] = new Person( persons[persName]);
+      Person.instances[personId] = new Person( persons[personId]);
     } catch (e) {
-      console.log(`${e.constructor.personId} while deserializing person ${persName}: ${e.message}`);
+      console.log(`${e.constructor.personId} while deserializing person ${personId}: ${e.message}`);
     }
   }
   console.log(`${Object.keys( persons).length} person records loaded.`);

@@ -19,14 +19,18 @@ import Person from "./Person.mjs";
  */
 class Movie {
 
-  constructor ({movieId, title, director, director_id, actors, actorsIdRef}) {
+  constructor ({movieId, title, releaseDate, director, director_id, actors, actorsIdRef}) {
+    console.log(` Actors: ${actors}`);
+    console.log(` actorsIdRef: ${actorsIdRef}`);
     // assign default values to mandatory properties
     this.movieId = movieId;   
     this.title = title;  
+    this.releaseDate = releaseDate;
     this.director = director || director_id;
     if (actors || actorsIdRef) {
         this.actors = actors || actorsIdRef;
     }
+    console.log(` this.actors: ${this.actors}`);
   }
 
   get movieId(){
@@ -73,21 +77,51 @@ class Movie {
   }
 
   static checkTitle ( tit) {
+    var validationResult = null;
     if (!tit) {
-      return new MandatoryValueConstraintViolation("A title must be provided!");
+      validationResult = new MandatoryValueConstraintViolation("A title must be provided!");
     } else if (typeof tit !== "string" || tit.trim() === "") {
-      return new RangeConstraintViolation("The title must be a non-empty string!");
+      validationResult = new RangeConstraintViolation("The title must be a non-empty string!");
     } else if (tit.length > 120) {
-      return new StringLengthConstraintViolation("The title must have at most 120 characters!");
+      validationResult = new StringLengthConstraintViolation("The title must have at most 120 characters!");
     } else {
-      return new NoConstraintViolation();
+      validationResult = new NoConstraintViolation();
     }
+    return validationResult;
   }
 
   set title ( tit) {
     const validationResult = Movie.checkTitle( tit);
     if (validationResult instanceof NoConstraintViolation) {
       this._title = tit;
+    } else {
+      throw validationResult;
+    }
+  }
+
+  get releaseDate(){
+    return this._releaseDate;
+  }
+
+  static checkReleaseDate ( rd){
+    const LOWER_BOUND_DATE = new Date("1895-12-28");
+    var validationResult = null;
+    if (!rd) {
+      validationResult = new MandatoryValueConstraintViolation("A releasedate must be provided!");
+    } else if ( !Date.parse(rd)) {
+      validationResult = new RangeConstraintViolation("The releasedate must be a date in format YYYY-MM-DD!");;
+    } else if ((new Date(rd) < LOWER_BOUND_DATE)) {
+      validationResult = new IntervalConstraintViolation("The release date has to be later or equal than 1895-12-28!");
+    } else {
+      validationResult = new NoConstraintViolation();
+    }
+    return validationResult;
+  }
+
+  set releaseDate( rd){
+    const validationResult = Movie.checkReleaseDate( rd);
+    if (validationResult instanceof NoConstraintViolation) {
+      this._releaseDate = rd;
     } else {
       throw validationResult;
     }
@@ -148,7 +182,7 @@ class Movie {
       if (actor_id && validationResult instanceof NoConstraintViolation) {
         // add the new actor reference
         const key = String( actor_id);
-        this._actors[key] = Actor.instances[key];
+        this._actors[key] = Person.instances[key];
       } else {
         throw validationResult;
       }
@@ -197,13 +231,13 @@ class Movie {
       switch (p) {
         case "_director":
           // convert object reference to ID reference
-          if (this._director) rec.director_id = this._director.name;
+          if (this._director) rec.director_id = this._director.personId;
           break;
         case "_actors":
           // convert the map of object references to a list of ID references
-          rec.actorIdRefs = [];
+          rec.actorsIdRefs = [];
           for (const actorIdStr of Object.keys( this.actors)) {
-            rec.actorIdRefs.push( parseInt( actorIdStr));
+            rec.actorsIdRefs.push( parseInt( actorIdStr));
           }
           break;
         default:
@@ -238,7 +272,7 @@ Movie.add = function (slots) {
    *  Update an existing Movie record/object
    */
   Movie.update = function ({movieId, title, releaseDate,
-      actorIdRefsToAdd, actorIdRefsToRemove, director_id}) {
+      actorsIdRefsToAdd, actorsIdRefsToRemove, director_id}) {
     const movie = Movie.instances[movieId],
           objectBeforeUpdate = cloneObject( movie);
     var noConstraintViolated=true, updatedProperties=[];
@@ -251,19 +285,19 @@ Movie.add = function (slots) {
         movie.releaseDate = releaseDate;
         updatedProperties.push("releaseDate");
       }
-      if (actorIdRefsToAdd) {
+      if (actorsIdRefsToAdd) {
         updatedProperties.push("actors(added)");
-        for (const actorIdRef of actorIdRefsToAdd) {
-          movie.addActor( actorIdRef);
+        for (const actorsIdRef of actorsIdRefsToAdd) {
+          movie.addActor( actorsIdRef);
         }
       }
-      if (actorIdRefsToRemove) {
+      if (actorsIdRefsToRemove) {
         updatedProperties.push("actors(removed)");
-        for (const actor_id of actorIdRefsToRemove) {
+        for (const actor_id of actorsIdRefsToRemove) {
           movie.removeActor( actor_id);
         }
       }
-      if (director_id &&  movie.director.name !== director_id) {
+      if (director_id &&  movie.director.personId !== director_id) {
         movie.director= director_id;
         updatedProperties.push("director");
       }
@@ -303,6 +337,7 @@ Movie.add = function (slots) {
       if (!localStorage["movies"]) localStorage["movies"] = "{}";
       else {
         movies = JSON.parse( localStorage["movies"]);
+        console.log(` movies: ${movies}`);
         console.log(`${Object.keys( movies).length} movie records loaded.`);
       }
     } catch (e) {
