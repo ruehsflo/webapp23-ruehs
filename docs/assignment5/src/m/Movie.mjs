@@ -25,10 +25,7 @@ class Movie {
     this.title = title;  
     this.releaseDate = releaseDate;
     this.director = director || director_id;
-    if (actors || actorsIdRef) {
-        this.actors = actors || actorsIdRef;
-    }
-    console.log(` this.actors: ${this.actors}`);
+    if (actors || actorsIdRef) this.actors = actors || actorsIdRef;
   }
 
   get movieId(){
@@ -142,14 +139,19 @@ class Movie {
 
   set director( d){
     if (!d) {  // unset director
+        delete this._director.directedMovies[ this._movieId];
         delete this._director;
       } else {
         // d can be an ID reference or an object reference
         const director_id = (typeof d !== "object") ? d : d.personId;
         const validationResult = Movie.checkDirector( director_id);
         if (validationResult instanceof NoConstraintViolation) {
+          if( this._director){
+            delete this._director.directedMovies[ this._movieId];
+          }
           // create the new directorreference
           this._director = Person.instances[ director_id];
+          this._director.directedMovies[ this._movieId] = this;
         } else {
           throw validationResult;
         }
@@ -174,24 +176,25 @@ class Movie {
 
   addActor( a) {
     // a can be an ID reference or an object reference
-    const actor_id = (typeof a !== "object") ? parseInt( a) : a.actorId;
-    if (actor_id) {
-      const validationResult = Movie.checkActor( actor_id);
+    const actor_id = (typeof a !== "object") ? parseInt( a) : a.personId;
+    const validationResult = Movie.checkActor( actor_id);
+  
       if (actor_id && validationResult instanceof NoConstraintViolation) {
         // add the new actor reference
-        const key = String( actor_id);
-        this._actors[key] = Person.instances[key];
+        this._actors[actor_id] = Person.instances[actor_id];
+        this._actors[actor_id].playedMovies[this._movieId] = this;
       } else {
         throw validationResult;
       }
-    }
+    
   }
   removeActor( a) {
     // a can be an ID reference or an object reference
-    const actor_id = (typeof a !== "object") ? parseInt( a) : a.actorId;
+    const actor_id = (typeof a !== "object") ? parseInt( a) : a.personId;
+    const validationResult = Movie.checkActor( actor_id);
     if (actor_id) {
-      const validationResult = Movie.checkActor( actor_id);
       if (validationResult instanceof NoConstraintViolation) {
+        delete this._actors[actor_id].playedMovies[this._movieId];
         // delete the actor reference
         delete this._actors[String( actor_id)];
       } else {
@@ -279,7 +282,7 @@ Movie.add = function (slots) {
         movie.title = title;
         updatedProperties.push("title");
       }
-      if (releaseDate && movie.releaseDate !== parseInt( releaseDate)) {
+      if (releaseDate && movie.releaseDate !== new Date( releaseDate)) {
         movie.releaseDate = releaseDate;
         updatedProperties.push("releaseDate");
       }
@@ -318,7 +321,16 @@ Movie.add = function (slots) {
    *  Delete an existing Movie record/object
    */
   Movie.destroy = function (movieId) {
-    if (Movie.instances[movieId]) {
+    const movie = Movie.instances[movieId];
+    if (movie) {
+      if(movie.director){
+        delete movie.director.directedMovies[movieId];
+      }
+      /*
+      for ( const actorId of Object.keys( movie.actors)){
+        delete movie.actors[actorId].playedMovies[movieId];
+      }
+      */
       console.log(`${Movie.instances[movieId].toString()} deleted!`);
       delete Movie.instances[movieId];
     } else {

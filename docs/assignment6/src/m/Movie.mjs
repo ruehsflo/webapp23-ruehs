@@ -12,6 +12,12 @@ import { NoConstraintViolation, MandatoryValueConstraintViolation, RangeConstrai
   IntervalConstraintViolation, UniquenessConstraintViolation, StringLengthConstraintViolation }
   from "../../lib/errorTypes.mjs";
 import Person from "./Person.mjs";
+import { Enumeration } from "../../lib/Enumeration.mjs";
+/**
+ * Enumeration type
+ * @global
+ */
+const MovieCategoryEL = new Enumeration(["Biography","TvSeriesEpisode"]);
 
 /**
  * The class Movie
@@ -19,7 +25,7 @@ import Person from "./Person.mjs";
  */
 class Movie {
 
-  constructor ({movieId, title, releaseDate, director, director_id, actors, actorsIdRef}) {
+  constructor ({movieId, title, releaseDate, director, director_id, actors, actorsIdRef, category, tvSeriesName, episodeNo, about}) {
     // assign default values to mandatory properties
     this.movieId = movieId;   
     this.title = title;  
@@ -28,7 +34,10 @@ class Movie {
     if (actors || actorsIdRef) {
         this.actors = actors || actorsIdRef;
     }
-    console.log(` this.actors: ${this.actors}`);
+    if (category) { this.category = category};
+    if (tvSeriesName) { this.tvSeriesName = tvSeriesName};
+    if (episodeNo) { this.episodeNo = episodeNo};
+    if (about) { this.about = about};
   }
 
   get movieId(){
@@ -129,30 +138,11 @@ class Movie {
     return this._director;
   }
 
-
-  static checkDirector ( director_id) {
-    var validationResult = null;
-    if(!director_id){
-        validationResult = new MandatoryValueConstraintViolation("A director must be provided");
-    } else {
-        validationResult = Person.checkPersonIdAsIdRef( director_id);
-    }
-    return validationResult;
-  }
-
   set director( d){
     if (!d) {  // unset director
         delete this._director;
       } else {
-        // d can be an ID reference or an object reference
-        const director_id = (typeof d !== "object") ? d : d.personId;
-        const validationResult = Movie.checkDirector( director_id);
-        if (validationResult instanceof NoConstraintViolation) {
-          // create the new directorreference
-          this._director = Person.instances[ director_id];
-        } else {
-          throw validationResult;
-        }
+        this._director = Person.instances[ director_id];
       }
   }
 
@@ -160,43 +150,21 @@ class Movie {
     return this._actors;
   }
 
-  static checkActor( actor_id) {
-    var validationResult = null;
-    if (!actor_id) {
-      // actor(s) are optional
-      validationResult = new NoConstraintViolation();
-    } else {
-      // invoke foreign key constraint check
-      validationResult = Person.checkPersonIdAsIdRef( actor_id);
-    }
-    return validationResult;
-  }
-
   addActor( a) {
     // a can be an ID reference or an object reference
     const actor_id = (typeof a !== "object") ? parseInt( a) : a.actorId;
     if (actor_id) {
-      const validationResult = Movie.checkActor( actor_id);
-      if (actor_id && validationResult instanceof NoConstraintViolation) {
-        // add the new actor reference
         const key = String( actor_id);
         this._actors[key] = Person.instances[key];
-      } else {
-        throw validationResult;
-      }
     }
   }
   removeActor( a) {
     // a can be an ID reference or an object reference
     const actor_id = (typeof a !== "object") ? parseInt( a) : a.actorId;
     if (actor_id) {
-      const validationResult = Movie.checkActor( actor_id);
-      if (validationResult instanceof NoConstraintViolation) {
         // delete the actor reference
         delete this._actors[String( actor_id)];
-      } else {
-        throw validationResult;
-      }
+     
     }
   }
   set actors( a) {
@@ -210,6 +178,90 @@ class Movie {
         this.addActor( a[idRef]);
       }
     }
+  }
+
+  get category (){
+    return this._category;
+  }
+
+  static checkCategory( c){
+    if (c === undefined) {
+        return new NoConstraintViolation();  // category is optional
+      } else if (!isIntegerOrIntegerString( c) || parseInt( c) < 1 ||
+          parseInt( c) > MovieCategoryEL.MAX) {
+        return new RangeConstraintViolation(
+            `Invalid value for category: ${c}`);
+      } else {
+        return new NoConstraintViolation();
+      }
+  }
+
+  set category ( c){
+    var validationResult = null;
+    if (this.category) {  // already set/assigned
+      validationResult = new FrozenValueConstraintViolation(
+          "The category cannot be changed!");
+    } else {
+      validationResult = Movie.checkCategory( c);
+    }
+    if (validationResult instanceof NoConstraintViolation) {
+      this._category = parseInt( c);
+    } else {
+      throw validationResult;
+    }
+  }
+
+  get tvSeriesName (){
+    return this._tvSeriesName;
+  }
+
+  static checkTvSeriesName ( tsn, c){
+    const cat = parseInt( c);
+    if (cat === MovieCategoryEL.TVSERIESEPISODE && !tsn) {
+      return new MandatoryValueConstraintViolation(
+          "A tv series name must be provided for a tv series episode!");
+    } else if (cat !== MovieCategoryEL.TVSERIESEPISODE && tsn) {
+      return new ConstraintViolation("A tv series name must not " +
+          "be provided if the movie is not a tv series episode!");
+    } else if (tsn && (typeof(tsn) !== "string" || tsn.trim() === "")) {
+      return new RangeConstraintViolation(
+          "The tv series name must be a non-empty string!");
+    } else {
+      return new NoConstraintViolation();
+    }
+  }
+
+  set tvSeriesName ( tsn){
+    const validationResult = Movie.checkTvSeriesName(tsn, this.category);
+    if (validationResult instanceof NoConstraintViolation) {
+        this._tvSeriesName = tsn;
+      } else {
+        throw validationResult;
+      }
+  }
+
+  get episodeNo (){
+    return this._episodeNo;
+  }
+
+  static checkEpisodeNo ( en, c){
+    const cat = parseInt( c);
+    if (cat === MovieCategoryEL.TVSERIESEPISODE && !en) {
+      return new MandatoryValueConstraintViolation(
+          "A episode number must be provided for a tv series episode!");
+    } else if (cat !== MovieCategoryEL.TVSERIESEPISODE && en) {
+      return new ConstraintViolation("A episode number must not " +
+          "be provided if the movie is not a tv series episode!");
+    } else if (en && !Number.isInteger(parseInt( id))) {
+      return new RangeConstraintViolation(
+          "The episode number must be a positive integer!");
+    } else {
+      return new NoConstraintViolation();
+    }
+  }
+
+  get about (){
+    return this._about;
   }
 
   /*********************************************************
