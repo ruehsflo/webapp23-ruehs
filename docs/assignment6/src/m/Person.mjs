@@ -154,6 +154,13 @@ Person.update = function ({personId, name}) {
  *  Delete an existing person record
  */
 Person.destroy = function (personId) {
+  for (const key of Object.keys( Movie.instances)) {
+    const movie = Movie.instances[key];
+    if (movie.director.personId === personId) { 
+      delete movie._director;  // delete the slot
+    }
+    movie.removeActor(personId);
+  }
   const person = Person.instances[personId];
   delete Person.instances[personId];
   // also delete this person from subtype populations

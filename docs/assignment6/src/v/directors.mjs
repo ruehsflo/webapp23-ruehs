@@ -1,5 +1,5 @@
 /**
- * @fileOverview  View code of UI for managing Author data
+ * @fileOverview  View code of UI for managing Director data
  * @author Gerd Wagner
  * @copyright Copyright 2013-2021 Gerd Wagner, Chair of Internet Technology, Brandenburg University of Technology, Germany.
  * @license This code is licensed under The Code Project Open License (CPOL), implying that the code is provided "as-is",
@@ -8,14 +8,14 @@
 /***************************************************************
  Import classes, datatypes and utility procedures
  ***************************************************************/
-import Author from "../m/Author.mjs";
+import Director from "../m/Director.mjs";
 import Person from "../m/Person.mjs";
 import { fillSelectWithOptions } from "../../lib/util.mjs";
 
 /***************************************************************
  Load data
  ***************************************************************/
-Author.retrieveAll();
+Director.retrieveAll();
 
 /***************************************************************
  Set up general, use-case-independent UI elements
@@ -33,152 +33,149 @@ for (const frm of document.querySelectorAll("section > form")) {
 }
 // save data when leaving the page
 window.addEventListener("beforeunload", function () {
-  Author.saveAll();
+  Director.saveAll();
 });
 
 /**********************************************
- * Use case Retrieve/List Authors
+ * Use case List Directors
 **********************************************/
 document.getElementById("RetrieveAndListAll").addEventListener("click", function () {
-  const tableBodyEl = document.querySelector("section#Author-R > table > tbody");
+  const tableBodyEl = document.querySelector("section#Director-R>table>tbody");
   // reset view table (drop its previous contents)
   tableBodyEl.innerHTML = "";
   // populate view table
-  for (const key of Object.keys( Author.instances)) {
-    const author = Author.instances[key];
+  for (const key of Object.keys( Director.instances)) {
+    const director = Director.instances[key];
     const row = tableBodyEl.insertRow();
-    row.insertCell().textContent = author.personId;
-    row.insertCell().textContent = author.name;
-    row.insertCell().textContent = author.biography;
+    row.insertCell().textContent = director.personId;
+    row.insertCell().textContent = director.name;
   }
-  document.getElementById("Author-M").style.display = "none";
-  document.getElementById("Author-R").style.display = "block";
+  document.getElementById("Director-M").style.display = "none";
+  document.getElementById("Director-R").style.display = "block";
 });
 
 /**********************************************
- * Use case Create Author
+ * Use case Create Director
 **********************************************/
-const createFormEl = document.querySelector("section#Author-C > form");
+const createFormEl = document.querySelector("section#Director-C > form");
+const crtSelCategoryEl = createFormEl.selectCategory;
 //----- set up event handler for menu item "Create" -----------
 document.getElementById("Create").addEventListener("click", function () {
-  document.getElementById("Author-M").style.display = "none";
-  document.getElementById("Author-C").style.display = "block";
+  document.getElementById("Director-M").style.display = "none";
+  document.getElementById("Director-C").style.display = "block";
   createFormEl.reset();
 });
 // set up event handlers for responsive constraint validation
 createFormEl.personId.addEventListener("input", function () {
   createFormEl.personId.setCustomValidity(
-    Person.checkPersonIdAsId( createFormEl.personId.value, Author).message);
+    Person.checkPersonIdAsId( createFormEl.personId.value, Director).message);
 });
 /* SIMPLIFIED CODE: no responsive validation of name and biography */
 
-/**
- * handle save events
- */
+// handle Save button click events
 createFormEl["commit"].addEventListener("click", function () {
   const slots = {
     personId: createFormEl.personId.value,
     name: createFormEl.name.value,
-    biography: createFormEl.biography.value
-  };
+  }
   // check all input fields and show error messages
-  createFormEl.personId.setCustomValidity(
-    Person.checkPersonIdAsId( slots.personId).message, Author);
-  /* SIMPLIFIED CODE: no before-submit validation of name */
+  createFormEl.personId.addEventListener("input", function () {
+    createFormEl.personId.setCustomValidity(
+      Person.checkPersonIdAsId( createFormEl.personId.value).message);
+  });
+  createFormEl.name.addEventListener("input", function () {
+    createFormEl.name.setCustomValidity(
+      Person.checkName( createFormEl.name.value).message);
+  });
   // save the input data only if all form fields are valid
-  if (createFormEl.checkValidity()) Author.add( slots);
+  if (createFormEl.checkValidity()) Director.add( slots);
+});
+// define event listener for pre-filling superclass attributes
+createFormEl.personId.addEventListener("change", function () {
+  const persId = createFormEl.personId.value;
+  if (persId in Person.instances) {
+    createFormEl.name.value = Person.instances[persId].name;
+    // set focus to next field
+    createFormEl.dirNo.focus();
+  }
 });
 
 /**********************************************
- * Use case Update Author
+ * Use case Update Director
 **********************************************/
-const updateFormEl = document.querySelector("section#Author-U > form");
-const updSelAuthorEl = updateFormEl.selectAuthor;
-// handle click event for the menu item "Update"
+const updateFormEl = document.querySelector("section#Director-U > form"),
+      updSelDirectorEl = updateFormEl.selectDirector,
+      updSelCategoryEl = updateFormEl.selectCategory;
+//----- set up event handler for menu item "Update" -----------
 document.getElementById("Update").addEventListener("click", function () {
   // reset selection list (drop its previous contents)
-  updSelAuthorEl.innerHTML = "";
+  updSelDirectorEl.innerHTML = "";
   // populate the selection list
-  fillSelectWithOptions( updSelAuthorEl, Author.instances,
+  fillSelectWithOptions( updSelDirectorEl, Director.instances,
       "personId", {displayProp:"name"});
-  document.getElementById("Author-M").style.display = "none";
-  document.getElementById("Author-U").style.display = "block";
+  document.getElementById("Director-M").style.display = "none";
+  document.getElementById("Director-U").style.display = "block";
   updateFormEl.reset();
 });
-// handle change events on employee select element
-updSelAuthorEl.addEventListener("change", handleAuthorSelectChangeEvent);
 
 // handle Save button click events
 updateFormEl["commit"].addEventListener("click", function () {
-  const authorIdRef = updSelAuthorEl.value;
-  if (!authorIdRef) return;
+  const categoryStr = updateFormEl.selectCategory.value;
+  const directorIdRef = updSelDirectorEl.value;
+  if (!directorIdRef) return;
   const slots = {
     personId: updateFormEl.personId.value,
     name: updateFormEl.name.value,
-    biography: updateFormEl.biography.value
   }
+  
   // check all property constraints
-  /* SIMPLIFIED CODE: no before-save validation of name */
+  updateFormEl.personId.setCustomValidity( Person.checkPersonIdAsId( slots.personId).message);
+  updateFormEl.name.setCustomValidity( Person.checkName( slots.name).message);
   // save the input data only if all of the form fields are valid
-  if (updSelAuthorEl.checkValidity()) {
-    Author.update( slots);
+  if (updSelDirectorEl.checkValidity()) {
+    Director.update( slots);
     // update the author selection list's option element
-    updSelAuthorEl.options[updSelAuthorEl.selectedIndex].text = slots.name;
+    updSelDirectorEl.options[updSelDirectorEl.selectedIndex].text = slots.name;
   }
 });
-/**
- * handle author selection events
- * when a author is selected, populate the form with the data of the selected author
- */
-function handleAuthorSelectChangeEvent() {
-  const key = updSelAuthorEl.value;
-  if (key) {
-    const auth = Author.instances[key];
-    updateFormEl.personId.value = auth.personId;
-    updateFormEl.name.value = auth.name;
-    updateFormEl.biography.value = auth.biography;
-  } else {
-    updateFormEl.reset();
-  }
-}
 
 /**********************************************
- * Use case Delete Author
+ * Use case Delete Director
 **********************************************/
-const deleteFormEl = document.querySelector("section#Author-D > form");
-const delSelAuthorEl = deleteFormEl.selectAuthor;
-//----- set up event handler for Update button -------------------------
+const deleteFormEl = document.querySelector("section#Director-D > form");
+const delSelDirectorEl = deleteFormEl.selectDirector;
+//----- set up event handler for menu item "Delete" -----------
 document.getElementById("Delete").addEventListener("click", function () {
   // reset selection list (drop its previous contents)
-  delSelAuthorEl.innerHTML = "";
+  delSelDirectorEl.innerHTML = "";
   // populate the selection list
-  fillSelectWithOptions( delSelAuthorEl, Author.instances,
-      "personId", {displayProp:"name"});
-  document.getElementById("Author-M").style.display = "none";
-  document.getElementById("Author-D").style.display = "block";
+  fillSelectWithOptions( delSelDirectorEl, Director.instances,
+    "personId", {displayProp:"name"});
+  document.getElementById("Director-M").style.display = "none";
+  document.getElementById("Director-D").style.display = "block";
   deleteFormEl.reset();
 });
 // handle Delete button click events
 deleteFormEl["commit"].addEventListener("click", function () {
-  const personIdRef = delSelAuthorEl.value;
+  const personIdRef = delSelDirectorEl.value;
   if (!personIdRef) return;
-  if (confirm("Do you really want to delete this author?")) {
-    Author.destroy( personIdRef);
-    delSelAuthorEl.remove( delSelAuthorEl.selectedIndex);
+  if (confirm("Do you really want to delete this director?")) {
+    Director.destroy( personIdRef);
+    delSelDirectorEl.remove( delSelDirectorEl.selectedIndex);
   }
 });
 
 /**********************************************
- * Refresh the Manage Authors Data UI
+ * Refresh the Manage Directors Data UI
  **********************************************/
 function refreshManageDataUI() {
-  // show the manage author UI and hide the other UIs
-  document.getElementById("Author-M").style.display = "block";
-  document.getElementById("Author-R").style.display = "none";
-  document.getElementById("Author-C").style.display = "none";
-  document.getElementById("Author-U").style.display = "none";
-  document.getElementById("Author-D").style.display = "none";
+  // show the manage director UI and hide the other UIs
+  document.getElementById("Director-M").style.display = "block";
+  document.getElementById("Director-R").style.display = "none";
+  document.getElementById("Director-C").style.display = "none";
+  document.getElementById("Director-U").style.display = "none";
+  document.getElementById("Director-D").style.display = "none";
 }
 
-// Set up Manage Authors UI
+// Set up Manage Directors UI
 refreshManageDataUI();

@@ -9,8 +9,8 @@
  Import classes, datatypes and utility procedures
  ***************************************************************/
 import Person from "../m/Person.mjs";
-import Employee from "../m/Employee.mjs";
-import Author from "../m/Author.mjs";
+import Director from "../m/Director.mjs";
+import Actor from "../m/Actor.mjs";
 import { fillSelectWithOptions } from "../../lib/util.mjs";
 
 /***************************************************************
@@ -80,7 +80,10 @@ createFormEl.personId.addEventListener("input", function () {
   createFormEl.personId.setCustomValidity(
     Person.checkPersonIdAsId( createFormEl.personId.value).message);
 });
-/* SIMPLIFIED CODE: no responsive validation of name */
+createFormEl.name.addEventListener("input", function () {
+  createFormEl.name.setCustomValidity(
+    Person.checkName( createFormEl.name.value).message);
+});
 
 // handle Save button click events
 createFormEl["commit"].addEventListener("click", function () {
@@ -130,7 +133,8 @@ updateFormEl["commit"].addEventListener("click", function () {
     name: updateFormEl.name.value
   }
   // check all property constraints
-  /* SIMPLIFIED CODE: no before-save validation of name */
+  updateFormEl.personId.setCustomValidity( Person.checkPersonIdAsId( slots.personId).message);
+  updateFormEl.name.setCustomValidity( Person.checkName( slots.name).message);
   // save the input data only if all of the form fields are valid
   if (updSelPersonEl.checkValidity()) {
     Person.update( slots);

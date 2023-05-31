@@ -1,11 +1,10 @@
 /**
- * @fileOverview  App-level controller code
+ * @fileOverview  Auxiliary data management procedures
  * @author Gerd Wagner
  */
 import Person from "../m/Person.mjs";
-import Author from "../m/Author.mjs";
-import Employee, { EmployeeCategoryEL } from "../m/Employee.mjs";
-import Book, { BookCategoryEL } from "../m/Book.mjs";
+import Movie, { MovieCategoryEL } from "../m/Movie.mjs";
+import Director from "../m/Director.mjs";
 
 /*******************************************
  *** Auxiliary methods for testing **********
@@ -15,60 +14,46 @@ import Book, { BookCategoryEL } from "../m/Book.mjs";
  */
 function generateTestData() {
   try {
-    Book.instances["0553345842"] = new Book({
-      isbn: "0553345842",
-      title: "The Mind's I",
-      year: 1982
+    Director.instances["1"] = new Director({
+      personId: 1,
+      name: "Stephen Frears"
     });
-    Book.instances["1463794762"] = new Book({
-      isbn: "1463794762",
-      title: "The Critique of Pure Reason",
-      year: 2011
+    Director.instances["2"] = new Director({
+      personId: 2,
+      name: "George Lucas"
     });
-    Book.instances["0631232826"] = new Book({
-      isbn: "0631232826",
-      title: "Kant",
-      year: 2001,
-      category: BookCategoryEL.TEXTBOOK,
-      subjectArea: "Philosophy"
+    Director.instances["3"] = new Director({
+      personId: 3,
+      name: "Quentin Tarantino"
     });
-    Book.instances["0300029829"] = new Book({
-      isbn: "0300029829",
-      title: "Kant's Life and Thoughts",
-      year: 1983,
-      category: BookCategoryEL.BIOGRAPHY,
-      about: "Immanuel Kant"
+    Director.saveAll();
+    Movie.instances["1"] = new Movie({
+      movieId: 1,
+      title: "Pulp Fiction",
+      releaseDate: "1994-05-12",
+      actorsIdRef: [3,5,6],
+      director_id: 3
     });
-    Book.saveAll();
-    Employee.instances["1001"] = new Employee({
-      personId: 1001,
-      name: "Harry Wagner",
-      empNo: 21035
+    Movie.instances["2"] = new Movie({
+      movieId: 2,
+      title: "Star Wars",
+      releaseDate: "1977-05-25",
+      actorsIdRef: [7,8],
+      director_id: 2,
+      category: MovieCategoryEL.TVSERIESEPISODE,
+      tvSeriesName: "Star Wars",
+      episodeNo: 2,
     });
-    Employee.instances["1002"] = new Employee({
-      personId: 1002,
-      name: "Peter Boss",
-      empNo: 23107,
-      category: EmployeeCategoryEL.MANAGER,
-      department: "Marketing"});
-    Employee.saveAll();
-    Author.instances["1001"] = new Author({
-      personId: 1001,
-      name: "Harry Wagner",
-      biography: "Born in Boston, MA, in 1956, ..."
+    Movie.instances["3"] = new Movie({
+      movieId: 3,
+      title: "Dangerous Liaisons",
+      releaseDate: "1994-05-12",
+      actorsIdRef: [9,5],
+      director_id: 1,
+      category: MovieCategoryEL.BIOGRAPHY,
+      about: 1,
     });
-    Author.instances["1077"] = new Author({
-      personId: 1077,
-      name: "Immanuel Kant",
-      biography: "Immanuel Kant (1724-1804) was a German philosopher ..."
-    });
-    Author.saveAll();
-    // an example of a person that is neither an employee, nor an author
-    Person.instances["1003"] = new Person({
-      personId:1003,
-      name:"Tom Daniels"
-    });
-    Person.saveAll();
+    Movie.saveAll();
   } catch (e) {
     console.log( `${e.constructor.name}: ${e.message}`);
   }
@@ -79,20 +64,13 @@ function generateTestData() {
 function clearData() {
   if (confirm( "Do you really want to delete the entire database?")) {
     try {
-      [Employee, Author, Person, Book].forEach(Class => {
-        Class.instances = {};
-      });
-      /*
-          Employee.instances = {};
-          Author.instances = {};
-          Person.instances = {};
-          Book.instances = {};
-      */
-      localStorage["employees"] = localStorage["authors"] = localStorage["people"] = "{}";
-      localStorage["books"] = "{}";
+      Person.instances = {};
+      localStorage["persons"] = "{}";
+      Movie.instances = {};
+      localStorage["movies"] = "{}";
       console.log("All data cleared.");
     } catch (e) {
-      console.log(`${e.constructor.name}: ${e.message}`);
+      console.log( `${e.constructor.name}: ${e.message}`);
     }
   }
 }

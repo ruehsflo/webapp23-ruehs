@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Plain JS Subtyping App: Manage Authors</title>
+  <title>Plain JS Subtyping App: Manage actors</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
   <meta name="theme-color" content="#ffffff"/>
@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="css/normalize.css"/>
   <link rel="stylesheet" href="css/main.css"/>
 
-  <script src="src/v/authors.mjs" type="module"></script>
+  <script src="src/v/actors.mjs" type="module"></script>
 </head>
 <body>
 <header>
@@ -26,43 +26,35 @@
       <h1>Public Library</h1>
       <h2>Plain JS Subtyping App</h2>
     </div>
-    <nav>
-      <ul>
-        <li><a href="books.html">Books</a></li>
-        <li><a href="authors.html">Authors</a></li>
-        <li><a href="employees.html">Employees</a></li>
-        <li><a href="people.html">People</a></li>
-      </ul>
-    </nav>
   </div>
 </header>
 <main>
   <div class="wrapper clearfix">
     <!-- ======================================================= -->
-    <section id="Author-M" class="UI-Page">
+    <section id="Actor-M" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>Manage authors</h1>
+      <h1>Manage actors</h1>
       <ul class="menu">
         <li>
-          <button type="button" id="RetrieveAndListAll">Retrieve/list all author records</button>
+          <button type="button" id="RetrieveAndListAll">Retrieve/list all actor records</button>
         </li>
         <li>
-          <button type="button" id="Create">Create a new author record</button>
+          <button type="button" id="Create">Create a new actor record</button>
         </li>
         <li>
-          <button type="button" id="Update">Update an author record</button>
+          <button type="button" id="Update">Update an actor record</button>
         </li>
         <li>
-          <button type="button" id="Delete">Delete an author record</button>
+          <button type="button" id="Delete">Delete an actor record</button>
         </li>
       </ul>
       <div class="button"><a href="index.html">Back to Main menu</a></div>
     </section>
     <!-- ======================================================= -->
-    <section id="Author-R" class="UI-Page">
+    <section id="Actor-R" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>List all authors</h1>
-      <table id="authors">
+      <h1>List all actors</h1>
+      <table id="actors">
         <thead>
         <tr>
           <th>ID</th>
@@ -76,9 +68,9 @@
       </div>
     </section>
     <!-- ======================================================= -->
-    <section id="Author-C" class="UI-Page">
+    <section id="Actor-C" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>Add a new author</h1>
+      <h1>Add a new actor</h1>
       <form>
         <div class="field">
           <label>ID: <input type="text" name="personId"/></label>
@@ -87,7 +79,7 @@
           <label>Name: <input type="text" name="name"/></label>
         </div>
         <div class="field with-text-area">
-          <label>Biography: <textarea name="biography"></textarea></label>
+          <label>Agent: <textarea name="agent"></textarea></label>
         </div>
         <div class="button-group">
           <button type="submit" name="commit">Save</button>
@@ -96,12 +88,12 @@
       </form>
     </section>
     <!-- ======================================================= -->
-    <section id="Author-U" class="UI-Page">
+    <section id="Actor-U" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>Update an author record</h1>
+      <h1>Update an actor record</h1>
       <form>
         <div class="select-one">
-          <label>Select author: <select name="selectAuthor"></select></label>
+          <label>Select actor: <select name="selectActor"></select></label>
         </div>
         <div class="field">
           <label>ID:
@@ -112,7 +104,7 @@
           <label>Name: <input type="text" name="name"/></label>
         </div>
         <div class="field with-text-area">
-          <label>Biography: <textarea name="biography"></textarea></label>
+          <label>Agent: <textarea name="agent"></textarea></label>
         </div>
         <div class="button-group">
           <button type="submit" name="commit">Save</button>
@@ -121,12 +113,12 @@
       </form>
     </section>
     <!-- ======================================================= -->
-    <section id="Author-D" class="UI-Page">
+    <section id="Actor-D" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>Delete an author record</h1>
+      <h1>Delete an actor record</h1>
       <form>
         <div class="select-one">
-          <label>Select author: <select name="selectAuthor"></select></label>
+          <label>Select actor: <select name="selectActor"></select></label>
         </div>
         <div class="button-group">
           <button type="submit" name="commit">Delete</button>

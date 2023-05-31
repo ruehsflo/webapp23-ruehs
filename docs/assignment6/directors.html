@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Plain JS Subtyping App: Manage Books</title>
+  <title>Plain JS Subtyping App: Manage Directors</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
   <meta name="theme-color" content="#ffffff"/>
@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="css/normalize.css"/>
   <link rel="stylesheet" href="css/main.css"/>
 
-  <script src="src/v/books.mjs" type="module"></script>
+  <script src="src/v/directors.mjs" type="module"></script>
 </head>
 <body>
 <header>
@@ -26,50 +26,39 @@
       <h1>Public Library</h1>
       <h2>Plain JS Subtyping App</h2>
     </div>
-    <nav>
-      <ul>
-        <li><a href="books.html">Books</a></li>
-        <li><a href="authors.html">Authors</a></li>
-        <li><a href="employees.html">Employees</a></li>
-        <li><a href="people.html">People</a></li>
-      </ul>
-    </nav>
   </div>
 </header>
 <main>
   <div class="wrapper clearfix">
     <!-- ======================================================= -->
-    <section id="Book-M" class="UI-Page">
+    <section id="Director-M" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>Manage book data</h1>
+      <h1>Manage director data</h1>
       <ul class="menu">
         <li>
-          <button type="button" id="RetrieveAndListAll">Retrieve/list all book records</button>
+          <button type="button" id="RetrieveAndListAll">Retrieve/list all director records</button>
         </li>
         <li>
-          <button type="button" id="Create">Create a new book record</button>
+          <button type="button" id="Create">Create a new director record</button>
         </li>
         <li>
-          <button type="button" id="Update">Update an book record</button>
+          <button type="button" id="Update">Update an director record</button>
         </li>
         <li>
-          <button type="button" id="Delete">Delete an book record</button>
+          <button type="button" id="Delete">Delete an director record</button>
         </li>
       </ul>
       <div class="button"><a href="index.html">Back to Main menu</a></div>
     </section>
     <!-- ======================================================= -->
-    <section id="Book-R" class="UI-Page">
+    <section id="Director-R" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>List all books</h1>
-      <table id="books">
+      <h1>List all directors</h1>
+      <table id="directors">
         <thead>
         <tr>
-          <th>ISBN</th>
-          <th>Title</th>
-          <th>Year</th>
-          <th>Category</th>
-        </tr>
+          <th>ID</th>
+          <th>Name</th>
         </thead>
         <tbody></tbody>
       </table>
@@ -78,27 +67,15 @@
       </div>
     </section>
     <!-- ======================================================= -->
-    <section id="Book-C" class="UI-Page">
+    <section id="Director-C" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>Create a new book record</h1>
-      <form autocomplete="off">
+      <h1>Create a new director record</h1>
+      <form>
         <div class="field">
-          <label>ISBN: <input type="text" name="isbn"/></label>
-        </div>
-        <div class="field">
-          <label>Title: <input type="text" name="title"/></label>
+          <label>ID: <input type="text" name="personId"/></label>
         </div>
         <div class="field">
-          <label>Year: <input type="text" name="year"/></label>
-        </div>
-        <div class="field">
-          <label>Category: <select name="category"></select></label>
-        </div>
-        <div class="field Textbook"><!-- conditional field -->
-          <label>Subject area: <input type="text" name="subjectArea"/></label>
-        </div>
-        <div class="field Biography"><!-- conditional field -->
-          <label>About: <input type="text" name="about"/></label>
+          <label>Name: <input type="text" name="name"/></label>
         </div>
         <div class="button-group">
           <button type="submit" name="commit">Save</button>
@@ -107,32 +84,20 @@
       </form>
     </section>
     <!-- ======================================================= -->
-    <section id="Book-U" class="UI-Page">
+    <section id="Director-U" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>Update a book record</h1>
+      <h1>Update an director record</h1>
       <form>
         <div class="select-one">
-          <label>Select book: <select name="selectBook"></select></label>
+          <label>Select director: <select name="selectDirector"></select></label>
         </div>
         <div class="field">
-          <label>ISBN:
-            <output name="isbn"></output>
+          <label>ID:
+            <output name="personId"></output>
           </label>
         </div>
         <div class="field">
-          <label>Title: <input type="text" name="title"/></label>
-        </div>
-        <div class="field">
-          <label>Year: <input type="text" name="year"/></label>
-        </div>
-        <div class="field">
-          <label>Category: <select name="category"></select></label>
-        </div>
-        <div class="field Textbook"><!-- conditional field -->
-          <label>Subject area: <input type="text" name="subjectArea"/></label>
-        </div>
-        <div class="field Biography"><!-- conditional field -->
-          <label>About: <input type="text" name="about"/></label>
+          <label>Name: <input type="text" name="name"/></label>
         </div>
         <div class="button-group">
           <button type="submit" name="commit">Save changes</button>
@@ -141,12 +106,12 @@
       </form>
     </section>
     <!-- ======================================================= -->
-    <section id="Book-D" class="UI-Page">
+    <section id="Director-D" class="UI-Page">
       <!-- ======================================================= -->
-      <h1>Delete a book record</h1>
+      <h1>Delete a director record</h1>
       <form>
         <div class="select-one">
-          <label>Select book: <select name="selectBook"></select></label>
+          <label>Select director: <select name="selectDirector"></select></label>
         </div>
         <div class="button-group">
           <button type="submit" name="commit">Delete</button>

@@ -138,11 +138,29 @@ class Movie {
     return this._director;
   }
 
+  static checkDirector ( director_id) {
+    var validationResult = null;
+    if(!director_id){
+        validationResult = new MandatoryValueConstraintViolation("A director must be provided");
+    } else {
+        validationResult = Person.checkPersonIdAsIdRef( director_id);
+    }
+    return validationResult;
+  }
+
   set director( d){
     if (!d) {  // unset director
         delete this._director;
       } else {
-        this._director = Person.instances[ director_id];
+        // d can be an ID reference or an object reference
+        const director_id = (typeof d !== "object") ? d : d.personId;
+        const validationResult = Movie.checkDirector( director_id);
+        if (validationResult instanceof NoConstraintViolation) {
+          // create the new directorreference
+          this._director = Person.instances[ director_id];
+        } else {
+          throw validationResult;
+        }
       }
   }
 
@@ -264,36 +282,46 @@ class Movie {
     return this._about;
   }
 
+  static checkAbout(about, c){
+    const cat = parseInt( c);
+    if (cat === MovieCategoryEL.BIOGRAPHY && !about) {
+      return new MandatoryValueConstraintViolation(
+          "A person must be provided for about!");
+    } else if (cat !== MovieCategoryEL.BIOGRAPHY && about) {
+      return new ConstraintViolation("An about must not " +
+          "be provided if the movie is not a biography!");
+    } else {
+      return validationResult = Person.checkPersonIdAsIdRef( about);
+    }
+  }
+
+  set about ( about){
+    const validationResult = Movie.checkAbout(about, this.category);
+    if (validationResult instanceof NoConstraintViolation) {
+        this._about = about;
+      } else {
+        throw validationResult;
+      }
+  }
+
   /*********************************************************
    ***  Other Instance-Level Methods  ***********************
    **********************************************************/
    toString() {
     var movStr = `Movie{ ID: ${this.movieId}, title: ${this.title}, releaseDate: ${this.releaseDate}, director: ${this.director.toString()}`;
-    if (this.actors) movStr += `, actors: ${Object.keys( this.actors).join(",")} }`;
+    if (this.actors) movStr += `, actors: ${Object.keys( this.actors)} `;
+    if (this.tvSeriesName) movStr += `, TvSeriesName: ${this.tvSeriesName} `;
+    if (this.episodeNo) movStr += `, Episode Number: ${this.episodeNo} `;
+    if (this.about) movStr += `, about: ${this.about} `;
+    movStr += `}`;
     return `${movStr}`;
   }
   // Convert object to record with ID references
-  toJSON() {  // is invoked by JSON.stringify in Movie.saveAll
-    var rec = {};
+  toJSON() { // is invoked by JSON.stringify in Book.saveAll
+    const rec = {};
     for (const p of Object.keys( this)) {
-      // copy only property slots with underscore prefix
-      if (p.charAt(0) !== "_") continue;
-      switch (p) {
-        case "_director":
-          // convert object reference to ID reference
-          if (this._director) rec.director_id = this._director.personId;
-          break;
-        case "_actors":
-          // convert the map of object references to a list of ID references
-          rec.actorsIdRefs = [];
-          for (const actorIdStr of Object.keys( this.actors)) {
-            rec.actorsIdRefs.push( parseInt( actorIdStr));
-          }
-          break;
-        default:
-          // remove underscore prefix
-          rec[p.substr(1)] = this[p];
-      }
+      // remove underscore prefix
+      if (p.charAt(0) === "_") rec[p.substr(1)] = this[p];
     }
     return rec;
   }
@@ -415,3 +443,4 @@ Movie.add = function (slots) {
   };
 
 export default Movie;
+export { MovieCategoryEL };
