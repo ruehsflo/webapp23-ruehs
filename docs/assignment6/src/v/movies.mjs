@@ -10,6 +10,7 @@
  ***************************************************************/
 import Movie, { MovieCategoryEL } from "../m/Movie.mjs";
 import Person from "../m/Person.mjs";
+import Director from "../m/Director.mjs";
 import { displaySegmentFields, undisplayAllSegmentFields } from "./app.mjs"
 import { fillSelectWithOptions } from "../../lib/util.mjs";
 
@@ -83,7 +84,7 @@ document.getElementById("Create").addEventListener("click", function () {
   document.getElementById("Movie-M").style.display = "none";
   document.getElementById("Movie-C").style.display = "block";
   undisplayAllSegmentFields( createFormEl, MovieCategoryEL.labels);
-  fillSelectWithOptions( selectDirectorEl, Person.instances, "personId");
+  fillSelectWithOptions( selectDirectorEl, Director.instances, "personId");
   createFormEl.reset();
 });
 // set up event handlers for responsive constraint validation

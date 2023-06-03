@@ -60,10 +60,22 @@ class Person {
   }
   static checkPersonIdAsIdRef(id) {
     var validationResult = Person.checkPersonId( id);
-    if ((validationResult instanceof NoConstraintViolation) && id) {
+    if (((validationResult instanceof NoConstraintViolation) ||(validationResult instanceof UniquenessConstraintViolation)) && id) {
       if (!Person.instances[id]) {
-        validationResult = new ReferentialIntegrityConstraintViolation(
+        var searchResult = false;
+        for (const Subtype of Person.subtypes) {
+          for (const key of Object.keys( Subtype.instances)) {
+            if(Subtype.instances[key].personId === id){
+              searchResult = true;
+            }
+          }
+        }
+        if(searchResult){
+          validationResult = new NoConstraintViolation();
+        } else{
+          validationResult = new ReferentialIntegrityConstraintViolation(
             'There is no person record with this person ID!');
+        }
       }
     }
     return validationResult;
@@ -175,6 +187,13 @@ Person.destroy = function (personId) {
     const movie = Movie.instances[key];
     if (movie.director.personId === personId) { 
       delete movie._director;  // delete the slot
+    }
+    movie.removeActor(personId);
+  }
+  for (const key of Object.keys( Actor.instances)) {
+    const actor = Actor.instances[key];
+    if (actor.agent.personId === personId) { 
+      delete actor._agent;  // delete the slot
     }
     movie.removeActor(personId);
   }

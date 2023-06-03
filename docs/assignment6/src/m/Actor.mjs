@@ -7,6 +7,7 @@
  * can be modified to create derivative works, can be redistributed, and can be used in commercial applications.
  */
 import Person from "./Person.mjs";
+import Movie from "./Movie.mjs";
 import { cloneObject } from "../../lib/util.mjs";
 import { NoConstraintViolation, MandatoryValueConstraintViolation}
   from "../../lib/errorTypes.mjs";
@@ -31,11 +32,9 @@ class Actor extends Person {
 
   static checkAgent ( agent_id) {
     var validationResult = null;
-    if(!director_id){
-        validationResult = new MandatoryValueConstraintViolation("An agent must be provided");
-    } else {
-        validationResult = Person.checkPersonIdAsIdRef( agent_id);
-    }
+    if(!agent_id){
+      validationResult = Person.checkPersonIdAsIdRef( agent_id);
+    }    
     return validationResult;
   }
 
@@ -49,6 +48,7 @@ class Actor extends Person {
         if (validationResult instanceof NoConstraintViolation) {
           // create the new directorreference
           this._agent = Person.instances[ agent_id];
+          console.log(this._agent);
         } else {
           throw validationResult;
         }

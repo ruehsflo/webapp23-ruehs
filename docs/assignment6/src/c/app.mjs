@@ -30,7 +30,8 @@ function generateTestData() {
     Director.saveAll();
     Actor.instances["17"] = new Actor({
       personId: 17,
-      name: "Jack"
+      name: "Jack",
+      agent: 1
     });
     Actor.saveAll();
     Movie.instances["1"] = new Movie({

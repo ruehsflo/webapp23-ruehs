@@ -13,6 +13,8 @@ import { NoConstraintViolation, MandatoryValueConstraintViolation, RangeConstrai
   from "../../lib/errorTypes.mjs";
 import Person from "./Person.mjs";
 import { Enumeration } from "../../lib/Enumeration.mjs";
+import Director from "./Director.mjs";
+import Actor from "./Actor.mjs";
 /**
  * Enumeration type
  * @global
@@ -157,7 +159,7 @@ class Movie {
         const validationResult = Movie.checkDirector( director_id);
         if (validationResult instanceof NoConstraintViolation) {
           // create the new directorreference
-          this._director = Person.instances[ director_id];
+          this._director = Director.instances[ director_id];
         } else {
           throw validationResult;
         }
@@ -173,7 +175,7 @@ class Movie {
     const actor_id = (typeof a !== "object") ? parseInt( a) : a.actorId;
     if (actor_id) {
         const key = String( actor_id);
-        this._actors[key] = Person.instances[key];
+        this._actors[key] = Actor.instances[key];
     }
   }
   removeActor( a) {
@@ -270,7 +272,7 @@ class Movie {
     } else if (cat !== MovieCategoryEL.TVSERIESEPISODE && en) {
       return new ConstraintViolation("A episode number must not " +
           "be provided if the movie is not a tv series episode!");
-    } else if (en && !Number.isInteger(parseInt( id))) {
+    } else if (en && !Number.isInteger(parseInt( en))) {
       return new RangeConstraintViolation(
           "The episode number must be a positive integer!");
     } else {
@@ -291,7 +293,7 @@ class Movie {
       return new ConstraintViolation("An about must not " +
           "be provided if the movie is not a biography!");
     } else {
-      return validationResult = Person.checkPersonIdAsIdRef( about);
+      return  Person.checkPersonIdAsIdRef( about);
     }
   }
 

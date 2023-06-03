@@ -90,6 +90,11 @@ createFormEl["commit"].addEventListener("click", function () {
     createFormEl.name.setCustomValidity(
       Person.checkName( createFormEl.name.value).message);
   });
+
+  createFormEl.agent.addEventListener("input", function () {
+    createFormEl.name.setCustomValidity(
+      Actor.checkAgent( createFormEl.agent.value).message);
+  });
   // save the input data only if all form fields are valid
   if (createFormEl.checkValidity()) Actor.add( slots);
 });
@@ -125,6 +130,7 @@ updateFormEl["commit"].addEventListener("click", function () {
   // check all property constraints
   updateFormEl.personId.setCustomValidity( Person.checkPersonIdAsId( slots.personId, Actor).message);
   updateFormEl.name.setCustomValidity( Person.checkName( slots.name).message);
+  updSelActorEl.agent.setCustomValidity( Actor.checkAgent( slots.agent).message);
   // save the input data only if all of the form fields are valid
   if (updSelActorEl.checkValidity()) {
     Actor.update( slots);

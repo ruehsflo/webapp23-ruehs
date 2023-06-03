@@ -7,6 +7,7 @@
  * can be modified to create derivative works, can be redistributed, and can be used in commercial applications.
  */
 import Person from "./Person.mjs";
+import Movie from  "./Movie.mjs";
 import { cloneObject } from "../../lib/util.mjs";
 
 /**
