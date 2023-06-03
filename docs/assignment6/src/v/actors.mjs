@@ -123,7 +123,7 @@ updateFormEl["commit"].addEventListener("click", function () {
     agent: updateFormEl.agent.value
   }
   // check all property constraints
-  updateFormEl.personId.setCustomValidity( Person.checkPersonIdAsId( slots.personId).message);
+  updateFormEl.personId.setCustomValidity( Person.checkPersonIdAsId( slots.personId, Actor).message);
   updateFormEl.name.setCustomValidity( Person.checkName( slots.name).message);
   // save the input data only if all of the form fields are valid
   if (updSelActorEl.checkValidity()) {

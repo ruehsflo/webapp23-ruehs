@@ -5,6 +5,7 @@
 import Person from "../m/Person.mjs";
 import Movie, { MovieCategoryEL } from "../m/Movie.mjs";
 import Director from "../m/Director.mjs";
+import Actor from "../m/Actor.mjs";
 
 /*******************************************
  *** Auxiliary methods for testing **********
@@ -27,6 +28,11 @@ function generateTestData() {
       name: "Quentin Tarantino"
     });
     Director.saveAll();
+    Actor.instances["17"] = new Actor({
+      personId: 17,
+      name: "Jack"
+    });
+    Actor.saveAll();
     Movie.instances["1"] = new Movie({
       movieId: 1,
       title: "Pulp Fiction",

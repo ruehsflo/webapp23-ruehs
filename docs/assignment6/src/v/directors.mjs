@@ -70,7 +70,6 @@ createFormEl.personId.addEventListener("input", function () {
   createFormEl.personId.setCustomValidity(
     Person.checkPersonIdAsId( createFormEl.personId.value, Director).message);
 });
-/* SIMPLIFIED CODE: no responsive validation of name and biography */
 
 // handle Save button click events
 createFormEl["commit"].addEventListener("click", function () {
@@ -104,8 +103,7 @@ createFormEl.personId.addEventListener("change", function () {
  * Use case Update Director
 **********************************************/
 const updateFormEl = document.querySelector("section#Director-U > form"),
-      updSelDirectorEl = updateFormEl.selectDirector,
-      updSelCategoryEl = updateFormEl.selectCategory;
+      updSelDirectorEl = updateFormEl.selectDirector;
 //----- set up event handler for menu item "Update" -----------
 document.getElementById("Update").addEventListener("click", function () {
   // reset selection list (drop its previous contents)
@@ -118,9 +116,11 @@ document.getElementById("Update").addEventListener("click", function () {
   updateFormEl.reset();
 });
 
+// handle change events on employee select element
+updSelDirectorEl.addEventListener("change", handleDirectorSelectChangeEvent);
+
 // handle Save button click events
 updateFormEl["commit"].addEventListener("click", function () {
-  const categoryStr = updateFormEl.selectCategory.value;
   const directorIdRef = updSelDirectorEl.value;
   if (!directorIdRef) return;
   const slots = {
@@ -129,7 +129,7 @@ updateFormEl["commit"].addEventListener("click", function () {
   }
   
   // check all property constraints
-  updateFormEl.personId.setCustomValidity( Person.checkPersonIdAsId( slots.personId).message);
+  updateFormEl.personId.setCustomValidity( Person.checkPersonIdAsId( slots.personId, Director).message);
   updateFormEl.name.setCustomValidity( Person.checkName( slots.name).message);
   // save the input data only if all of the form fields are valid
   if (updSelDirectorEl.checkValidity()) {
@@ -138,6 +138,21 @@ updateFormEl["commit"].addEventListener("click", function () {
     updSelDirectorEl.options[updSelDirectorEl.selectedIndex].text = slots.name;
   }
 });
+
+/**
+ * handle direcotr selection events
+ * when a direcotr is selected, populate the form with the data of the selected direcotr
+ */
+function handleDirectorSelectChangeEvent() {
+  const key = updSelDirectorEl.value;
+  if (key) {
+    const act = Director.instances[key];
+    updateFormEl.personId.value = act.personId;
+    updateFormEl.name.value = act.name;
+  } else {
+    updateFormEl.reset();
+  }
+}
 
 /**********************************************
  * Use case Delete Director

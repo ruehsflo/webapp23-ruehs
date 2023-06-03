@@ -8,6 +8,8 @@
  */
 import Person from "./Person.mjs";
 import { cloneObject } from "../../lib/util.mjs";
+import { NoConstraintViolation, MandatoryValueConstraintViolation}
+  from "../../lib/errorTypes.mjs";
 
 /**
  * The class Actor

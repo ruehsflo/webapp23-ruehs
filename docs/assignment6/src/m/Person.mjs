@@ -77,12 +77,29 @@ class Person {
       throw validationResult;
     }
   }
+
   get name() {
     return this._name;
   }
+
+  static checkName( name){
+    var validationResult = null;
+    if (!name) {
+      validationResult = new MandatoryValueConstraintViolation("A name must be provided!");
+    } else if (typeof name !== "string" || name.trim() === "") {
+      validationResult = new RangeConstraintViolation("The name must be a non-empty string!");
+    }  else {
+      validationResult = new NoConstraintViolation();
+    }
+    return validationResult;
+  }
   set name( n) {
-    /*SIMPLIFIED CODE: no validation with Person.checkName */
-    this._name = n;
+    var validationResult = Person.checkName( n);
+    if (validationResult instanceof NoConstraintViolation) {
+      this._name = n;
+    } else {
+      throw validationResult;
+    }
   }
   /* Convert object to string */
   toString() {
